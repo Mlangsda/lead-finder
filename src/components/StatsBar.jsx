@@ -49,7 +49,7 @@ function StatCard({ label, value, leads }) {
         <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-surface-elevated border border-border rounded-xl shadow-lg max-h-64 overflow-y-auto">
           <div className="p-2">
             <p className="text-[10px] text-text-tertiary uppercase tracking-wide px-2 py-1">{label} ({leads.length})</p>
-            {leads.map((lead) => (
+            {[...leads].sort((a, b) => a.company.localeCompare(b.company, 'sv')).map((lead) => (
               <div key={lead.id} className="px-3 py-2 rounded-lg hover:bg-surface-card transition-colors">
                 <p className="text-sm font-medium text-text-primary">{lead.company}</p>
                 <p className="text-xs text-text-secondary">{lead.contact_name} · {lead.contact_title}</p>
