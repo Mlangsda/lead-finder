@@ -22,6 +22,7 @@ const emptyLead = {
 
 export function AddLeadModal({ onClose, onSave }) {
   const [form, setForm] = useState(emptyLead)
+  const [error, setError] = useState('')
 
   const set = (key, value) => setForm((prev) => ({ ...prev, [key]: value }))
 
@@ -38,7 +39,11 @@ export function AddLeadModal({ onClose, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!form.company || !form.email) return
+    if (!form.company) {
+      setError('Företagsnamn krävs')
+      return
+    }
+    setError('')
     onSave({ ...form, score: previewScore })
     onClose()
   }
@@ -62,14 +67,18 @@ export function AddLeadModal({ onClose, onSave }) {
           </div>
         </div>
 
+        {error && (
+          <p className="text-sm text-danger mb-4">{error}</p>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Foretag *" value={form.company} onChange={(v) => set('company', v)} />
+            <Field label="Företag *" value={form.company} onChange={(v) => set('company', v)} />
             <Field label="Kontaktperson" value={form.contact_name} onChange={(v) => set('contact_name', v)} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Titel" value={form.contact_title} onChange={(v) => set('contact_title', v)} placeholder="T.ex. Marknadschef" />
-            <Field label="E-post *" value={form.email} onChange={(v) => set('email', v)} type="email" />
+            <Field label="E-post" value={form.email} onChange={(v) => set('email', v)} type="email" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Telefon" value={form.phone} onChange={(v) => set('phone', v)} />
@@ -85,20 +94,20 @@ export function AddLeadModal({ onClose, onSave }) {
                 onChange={(e) => set('industry', e.target.value)}
                 className="w-full bg-surface-card border border-border rounded-xl px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent"
               >
-                <option value="">Valj bransch...</option>
+                <option value="">Välj bransch...</option>
                 {INDUSTRIES.map((i) => (
                   <option key={i} value={i}>{i}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-1.5">Omsattning</label>
+              <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-1.5">Omsättning</label>
               <select
                 value={form.revenue_range}
                 onChange={(e) => set('revenue_range', e.target.value)}
                 className="w-full bg-surface-card border border-border rounded-xl px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent"
               >
-                <option value="">Valj omsattning...</option>
+                <option value="">Välj omsättning...</option>
                 {REVENUE_RANGES.map((r) => (
                   <option key={r} value={r}>{r}</option>
                 ))}
@@ -109,7 +118,7 @@ export function AddLeadModal({ onClose, onSave }) {
           <div className="grid grid-cols-2 gap-4">
             <Field label="Ort" value={form.city} onChange={(v) => set('city', v)} placeholder="T.ex. Stockholm" />
             <div>
-              <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-1.5">Kalla</label>
+              <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-1.5">Källa</label>
               <select
                 value={form.source}
                 onChange={(e) => set('source', e.target.value)}
@@ -129,7 +138,7 @@ export function AddLeadModal({ onClose, onSave }) {
               onChange={(e) => set('trigger', e.target.value)}
               className="w-full bg-surface-card border border-border rounded-xl px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent"
             >
-              <option value="">Valj trigger...</option>
+              <option value="">Välj trigger...</option>
               {TRIGGERS.map((t) => (
                 <option key={t} value={t}>{t}</option>
               ))}
@@ -137,7 +146,7 @@ export function AddLeadModal({ onClose, onSave }) {
           </div>
 
           <div>
-            <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-2">Tjanster</label>
+            <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-2">Tjänster</label>
             <div className="flex gap-2 flex-wrap">
               {SERVICES.map((service) => (
                 <button
@@ -146,7 +155,7 @@ export function AddLeadModal({ onClose, onSave }) {
                   onClick={() => toggleService(service)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-medium border cursor-pointer transition-all ${
                     form.services.includes(service)
-                      ? 'bg-accent/20 border-accent text-accent'
+                      ? 'bg-accent text-white border-accent'
                       : 'bg-surface-card border-border text-text-secondary hover:border-text-tertiary'
                   }`}
                 >
@@ -167,7 +176,7 @@ export function AddLeadModal({ onClose, onSave }) {
             type="submit"
             className="w-full py-3 bg-accent hover:bg-accent-hover text-white rounded-2xl text-sm font-semibold cursor-pointer border-none"
           >
-            Lagg till lead
+            Lägg till lead
           </button>
         </form>
       </div>

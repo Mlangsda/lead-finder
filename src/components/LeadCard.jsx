@@ -48,8 +48,8 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
     if (criterion.id === 'marketing_title') return
     if (criterion.id === 'new_in_role') updates.trigger_type = isCurrentlyMet ? '' : 'Ny i rollen'
     if (criterion.id === 'new_funding') updates.trigger_type = isCurrentlyMet ? '' : 'Ny finansiering'
-    if (criterion.id === 'growth') updates.trigger_type = isCurrentlyMet ? '' : 'Tillvaxt'
-    if (criterion.id === 'healthcare') updates.industry = isCurrentlyMet ? '' : 'Halsovard'
+    if (criterion.id === 'growth') updates.trigger_type = isCurrentlyMet ? '' : 'Tillväxt'
+    if (criterion.id === 'healthcare') updates.industry = isCurrentlyMet ? '' : 'Hälsovård'
     if (criterion.id === 'revenue_fit') updates.revenue_range = isCurrentlyMet ? '' : '50-100 milj'
     if (criterion.id === 'stockholm') updates.city = isCurrentlyMet ? '' : 'Stockholm'
 
@@ -130,7 +130,7 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
         className="flex items-center gap-1 mt-3 text-xs text-text-tertiary hover:text-text-secondary cursor-pointer bg-transparent border-none p-0"
       >
         {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-        {expanded ? 'Dolj detaljer' : 'Visa detaljer'}
+        {expanded ? 'Dölj detaljer' : 'Visa detaljer'}
       </button>
 
       {expanded && (
@@ -151,7 +151,7 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <EditField label="Foretag" value={form.company} onChange={(v) => set('company', v)} />
+                <EditField label="Företag" value={form.company} onChange={(v) => set('company', v)} />
                 <EditField label="Kontaktperson" value={form.contact_name} onChange={(v) => set('contact_name', v)} />
                 <EditField label="Titel" value={form.contact_title} onChange={(v) => set('contact_title', v)} />
                 <EditField label="E-post" value={form.email} onChange={(v) => set('email', v)} />
@@ -161,21 +161,21 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
                 <div>
                   <label className="block text-xs text-text-tertiary mb-1">Bransch</label>
                   <select value={form.industry} onChange={(e) => set('industry', e.target.value)} className="w-full bg-surface-card border border-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent">
-                    <option value="">Valj...</option>
+                    <option value="">Välj...</option>
                     {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-text-tertiary mb-1">Omsattning</label>
+                  <label className="block text-xs text-text-tertiary mb-1">Omsättning</label>
                   <select value={form.revenue_range} onChange={(e) => set('revenue_range', e.target.value)} className="w-full bg-surface-card border border-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent">
-                    <option value="">Valj...</option>
+                    <option value="">Välj...</option>
                     {REVENUE_RANGES.map((r) => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs text-text-tertiary mb-1">Trigger</label>
                   <select value={form.trigger_type} onChange={(e) => set('trigger_type', e.target.value)} className="w-full bg-surface-card border border-border rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent">
-                    <option value="">Valj...</option>
+                    <option value="">Välj...</option>
                     {TRIGGERS.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
@@ -224,7 +224,7 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
                 onChange={(e) => onUpdate(lead.id, { notes: e.target.value })}
                 rows={2}
                 className="mt-1 w-full bg-surface-card border border-border rounded-lg px-3 py-2 text-sm text-text-primary resize-none focus:outline-none focus:border-accent"
-                placeholder="Lagg till anteckningar..."
+                placeholder="Lägg till anteckningar..."
               />
             </div>
             <button

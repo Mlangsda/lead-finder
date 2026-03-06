@@ -1,4 +1,4 @@
-// MLC Lead Scoring — kriterier och poang
+// MLC Lead Scoring — kriterier och poäng
 
 export const SCORING_CRITERIA = [
   {
@@ -7,13 +7,13 @@ export const SCORING_CRITERIA = [
     points: 15,
     check: (lead) => {
       const title = (lead.contact_title || '').toLowerCase()
-      const keywords = ['marknadschef', 'cmo', 'chief marketing', 'head of marketing', 'marketing manager', 'head of brand', 'brand manager', 'marknadsdirektor', 'kommunikationschef', 'marketing director']
+      const keywords = ['marknadschef', 'cmo', 'chief marketing', 'head of marketing', 'marketing manager', 'head of brand', 'brand manager', 'marknadsdirektör', 'kommunikationschef', 'marketing director']
       return keywords.some((k) => title.includes(k))
     },
   },
   {
     id: 'new_in_role',
-    label: 'Ny i rollen (< 1 ar)',
+    label: 'Ny i rollen (< 1 år)',
     points: 15,
     check: (lead) => (lead.trigger_type || lead.trigger || '') === 'Ny i rollen',
   },
@@ -25,19 +25,25 @@ export const SCORING_CRITERIA = [
   },
   {
     id: 'growth',
-    label: 'Tillvaxtforetag',
+    label: 'Tillväxtföretag',
     points: 10,
-    check: (lead) => (lead.trigger_type || lead.trigger || '') === 'Tillvaxt',
+    check: (lead) => {
+      const trigger = lead.trigger_type || lead.trigger || ''
+      return trigger === 'Tillväxt' || trigger === 'Tillvaxt'
+    },
   },
   {
     id: 'healthcare',
-    label: 'Halsovard',
+    label: 'Hälsovård',
     points: 10,
-    check: (lead) => (lead.industry || '') === 'Halsovard',
+    check: (lead) => {
+      const industry = lead.industry || ''
+      return industry === 'Hälsovård' || industry === 'Halsovard'
+    },
   },
   {
     id: 'revenue_fit',
-    label: 'Omsattning 50-100 milj',
+    label: 'Omsättning 50-100 milj',
     points: 15,
     check: (lead) => (lead.revenue_range || '') === '50-100 milj',
   },

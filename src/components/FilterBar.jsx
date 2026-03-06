@@ -9,7 +9,7 @@ export function FilterBar({ filters, setFilters }) {
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
         <input
           type="text"
-          placeholder="Sok foretag, kontakt, e-post..."
+          placeholder="Sök företag, kontakt, e-post..."
           value={filters.search}
           onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
           className="w-full bg-surface-elevated border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-accent"
@@ -34,7 +34,7 @@ export function FilterBar({ filters, setFilters }) {
         onChange={(e) => setFilters((f) => ({ ...f, source: e.target.value }))}
         className="bg-surface-elevated border border-border rounded-xl px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent cursor-pointer"
       >
-        <option value="">Alla kallor</option>
+        <option value="">Alla källor</option>
         {SOURCES.map((s) => (
           <option key={s} value={s}>{s}</option>
         ))}
@@ -46,7 +46,7 @@ export function FilterBar({ filters, setFilters }) {
         onChange={(e) => setFilters((f) => ({ ...f, service: e.target.value }))}
         className="bg-surface-elevated border border-border rounded-xl px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent cursor-pointer"
       >
-        <option value="">Alla tjanster</option>
+        <option value="">Alla tjänster</option>
         {SERVICES.map((s) => (
           <option key={s} value={s}>{s}</option>
         ))}
@@ -58,9 +58,9 @@ export function FilterBar({ filters, setFilters }) {
         onChange={(e) => setFilters((f) => ({ ...f, sort: e.target.value }))}
         className="bg-surface-elevated border border-border rounded-xl px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent cursor-pointer"
       >
-        <option value="score">Hogst score</option>
+        <option value="company">Företag A-Ö</option>
+        <option value="score">Högst score</option>
         <option value="date">Senast tillagd</option>
-        <option value="company">Foretag A-O</option>
       </select>
     </div>
   )
