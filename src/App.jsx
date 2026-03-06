@@ -70,11 +70,9 @@ export default function App() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/mlc-logo.png" alt="MLC" className="w-8 h-8 rounded" />
-            <div>
-              <h1 className="text-lg font-semibold tracking-tight">Lead Finder</h1>
-            </div>
+          <div className="flex items-center gap-4">
+            <img src="/mlc-logo.png" alt="MLC" className="w-14 h-14 object-contain" />
+            <h1 className="text-2xl font-bold tracking-tight">Lead Finder</h1>
           </div>
           <div className="flex items-center gap-2">
             <button
