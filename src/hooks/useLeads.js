@@ -40,9 +40,12 @@ export function useLeads() {
       source: lead.source,
       stage: lead.stage || 'new',
       services: lead.services || [],
-      score: lead.score || 50,
+      score: lead.score || 0,
       notes: lead.notes,
       trigger_type: lead.trigger || lead.trigger_type,
+      industry: lead.industry,
+      revenue_range: lead.revenue_range,
+      city: lead.city,
     }
 
     if (!supabase) {

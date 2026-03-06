@@ -64,7 +64,9 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
           </a>
         )}
         <span className="text-xs text-text-tertiary ml-auto">
-          {lead.source} &middot; {new Date(lead.created_at).toLocaleDateString('sv-SE')}
+          {[lead.city, lead.industry, lead.revenue_range].filter(Boolean).join(' · ')}
+          {(lead.city || lead.industry || lead.revenue_range) && ' · '}
+          {lead.source} · {new Date(lead.created_at).toLocaleDateString('sv-SE')}
         </span>
       </div>
 

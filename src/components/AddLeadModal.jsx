@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
-import { SOURCES, SERVICES } from '../lib/demo-data'
+import { SOURCES, SERVICES, INDUSTRIES, REVENUE_RANGES, TRIGGERS } from '../lib/demo-data'
+import { calculateScore } from '../lib/scoring'
 
 const emptyLead = {
   company: '',
@@ -12,9 +13,11 @@ const emptyLead = {
   source: 'LinkedIn',
   stage: 'new',
   services: [],
-  score: 50,
   notes: '',
   trigger: '',
+  industry: '',
+  revenue_range: '',
+  city: '',
 }
 
 export function AddLeadModal({ onClose, onSave }) {
@@ -31,10 +34,12 @@ export function AddLeadModal({ onClose, onSave }) {
     }))
   }
 
+  const previewScore = calculateScore(form)
+
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!form.company || !form.email) return
-    onSave(form)
+    onSave({ ...form, score: previewScore })
     onClose()
   }
 
@@ -44,12 +49,17 @@ export function AddLeadModal({ onClose, onSave }) {
       <div className="relative bg-surface-elevated border border-border rounded-3xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">Ny lead</h2>
-          <button
-            onClick={onClose}
-            className="p-2 text-text-tertiary hover:text-text-primary cursor-pointer bg-transparent border-none"
-          >
-            <X size={20} />
-          </button>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-text-tertiary">
+              Score: <span className={`font-bold ${previewScore >= 60 ? 'text-success' : previewScore >= 40 ? 'text-warning' : 'text-text-secondary'}`}>{previewScore}</span>
+            </span>
+            <button
+              onClick={onClose}
+              className="p-2 text-text-tertiary hover:text-text-primary cursor-pointer bg-transparent border-none"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,14 +68,46 @@ export function AddLeadModal({ onClose, onSave }) {
             <Field label="Kontaktperson" value={form.contact_name} onChange={(v) => set('contact_name', v)} />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Titel" value={form.contact_title} onChange={(v) => set('contact_title', v)} />
+            <Field label="Titel" value={form.contact_title} onChange={(v) => set('contact_title', v)} placeholder="T.ex. Marknadschef" />
             <Field label="E-post *" value={form.email} onChange={(v) => set('email', v)} type="email" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Telefon" value={form.phone} onChange={(v) => set('phone', v)} />
             <Field label="LinkedIn URL" value={form.linkedin_url} onChange={(v) => set('linkedin_url', v)} />
           </div>
+
+          {/* Scoring-relevant fields */}
           <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-1.5">Bransch</label>
+              <select
+                value={form.industry}
+                onChange={(e) => set('industry', e.target.value)}
+                className="w-full bg-surface-card border border-border rounded-xl px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent"
+              >
+                <option value="">Valj bransch...</option>
+                {INDUSTRIES.map((i) => (
+                  <option key={i} value={i}>{i}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-1.5">Omsattning</label>
+              <select
+                value={form.revenue_range}
+                onChange={(e) => set('revenue_range', e.target.value)}
+                className="w-full bg-surface-card border border-border rounded-xl px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent"
+              >
+                <option value="">Valj omsattning...</option>
+                {REVENUE_RANGES.map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Ort" value={form.city} onChange={(v) => set('city', v)} placeholder="T.ex. Stockholm" />
             <div>
               <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-1.5">Kalla</label>
               <select
@@ -78,7 +120,20 @@ export function AddLeadModal({ onClose, onSave }) {
                 ))}
               </select>
             </div>
-            <Field label="Trigger" value={form.trigger} onChange={(v) => set('trigger', v)} placeholder="T.ex. Ny marknadschef" />
+          </div>
+
+          <div>
+            <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-1.5">Trigger</label>
+            <select
+              value={form.trigger}
+              onChange={(e) => set('trigger', e.target.value)}
+              className="w-full bg-surface-card border border-border rounded-xl px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent"
+            >
+              <option value="">Valj trigger...</option>
+              {TRIGGERS.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -99,20 +154,6 @@ export function AddLeadModal({ onClose, onSave }) {
                 </button>
               ))}
             </div>
-          </div>
-
-          <div>
-            <label className="block text-xs text-text-tertiary uppercase tracking-wide mb-1.5">
-              Score: {form.score}
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={form.score}
-              onChange={(e) => set('score', parseInt(e.target.value))}
-              className="w-full accent-accent"
-            />
           </div>
 
           <Field

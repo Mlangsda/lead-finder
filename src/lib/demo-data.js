@@ -15,4 +15,35 @@ export const SERVICES = [
   'Generativ AI',
 ]
 
+export const INDUSTRIES = [
+  'Halsovard',
+  'Tech',
+  'Fastigheter',
+  'Finans',
+  'Konsult',
+  'Media',
+  'Retail',
+  'Industri',
+  'Annat',
+]
+
+export const REVENUE_RANGES = [
+  'Under 10 milj',
+  '10-50 milj',
+  '50-100 milj',
+  '100-500 milj',
+  'Over 500 milj',
+]
+
+export const TRIGGERS = [
+  'Ny i rollen',
+  'Ny finansiering',
+  'Tillvaxt',
+  'Varumarkeslansering',
+  'Omorganisation',
+  'LinkedIn-aktivitet',
+  'Referral',
+  'Annat',
+]
+
 export const demoLeads = []
