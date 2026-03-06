@@ -12,7 +12,7 @@ const defaultFilters = {
   stage: '',
   source: '',
   service: '',
-  sort: 'score',
+  sort: 'company',
 }
 
 export default function App() {
