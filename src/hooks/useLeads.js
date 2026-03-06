@@ -86,5 +86,39 @@ export function useLeads() {
     if (error) console.error('Error deleting lead:', error)
   }, [])
 
-  return { leads, loading, addLead, updateLead, deleteLead }
+  const importLeads = useCallback(async (newLeads) => {
+    const rows = newLeads.map((lead) => ({
+      company: lead.company || '',
+      contact_name: lead.contact_name || '',
+      contact_title: lead.contact_title || '',
+      email: lead.email || '',
+      phone: lead.phone || '',
+      linkedin_url: lead.linkedin_url || '',
+      source: lead.source || 'LinkedIn',
+      stage: lead.stage || 'new',
+      services: lead.services || [],
+      score: lead.score || 0,
+      notes: lead.notes || '',
+      trigger_type: lead.trigger_type || '',
+      industry: lead.industry || '',
+      revenue_range: lead.revenue_range || '',
+      city: lead.city || '',
+    }))
+
+    if (!supabase) {
+      const local = rows.map((r) => ({ ...r, id: crypto.randomUUID(), created_at: new Date().toISOString() }))
+      setLeads((prev) => [...local, ...prev])
+      return local
+    }
+
+    const { data, error } = await supabase.from('leads').insert(rows).select()
+    if (error) {
+      console.error('Error importing leads:', error)
+      return []
+    }
+    setLeads((prev) => [...(data || []), ...prev])
+    return data
+  }, [])
+
+  return { leads, loading, addLead, updateLead, deleteLead, importLeads }
 }

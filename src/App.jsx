@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react'
-import { Plus, Zap } from 'lucide-react'
+import { Plus, Upload, Zap } from 'lucide-react'
 import { useLeads } from './hooks/useLeads'
 import { StatsBar } from './components/StatsBar'
 import { FilterBar } from './components/FilterBar'
 import { LeadCard } from './components/LeadCard'
 import { AddLeadModal } from './components/AddLeadModal'
+import { ImportCSVModal } from './components/ImportCSVModal'
 
 const defaultFilters = {
   search: '',
@@ -15,9 +16,10 @@ const defaultFilters = {
 }
 
 export default function App() {
-  const { leads, loading, addLead, updateLead, deleteLead } = useLeads()
+  const { leads, loading, addLead, updateLead, deleteLead, importLeads } = useLeads()
   const [filters, setFilters] = useState(defaultFilters)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
 
   const filtered = useMemo(() => {
     let result = [...leads]
@@ -64,13 +66,22 @@ export default function App() {
               <p className="text-[11px] text-text-tertiary uppercase tracking-widest">MLC</p>
             </div>
           </div>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-2xl text-sm font-medium cursor-pointer border-none"
-          >
-            <Plus size={16} />
-            Ny lead
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-surface-elevated border border-border hover:border-accent text-text-primary rounded-2xl text-sm font-medium cursor-pointer"
+            >
+              <Upload size={16} />
+              Importera CSV
+            </button>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-2xl text-sm font-medium cursor-pointer border-none"
+            >
+              <Plus size={16} />
+              Ny lead
+            </button>
+          </div>
         </div>
       </header>
 
@@ -113,11 +124,17 @@ export default function App() {
         </div>
       </main>
 
-      {/* Modal */}
+      {/* Modals */}
       {showAddModal && (
         <AddLeadModal
           onClose={() => setShowAddModal(false)}
           onSave={addLead}
+        />
+      )}
+      {showImportModal && (
+        <ImportCSVModal
+          onClose={() => setShowImportModal(false)}
+          onImport={importLeads}
         />
       )}
     </div>
