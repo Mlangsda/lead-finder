@@ -1,4 +1,4 @@
-import { Mail, Phone, Linkedin, ChevronDown, ChevronUp, Trash2, Pencil, X, Check } from 'lucide-react'
+import { Mail, Phone, Linkedin, MapPin, Building2, TrendingUp, Banknote, ChevronDown, ChevronUp, Trash2, Pencil, X, Check } from 'lucide-react'
 import { useState } from 'react'
 import { ScoreBadge } from './ScoreBadge'
 import { StagePill } from './StagePill'
@@ -82,39 +82,72 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
         </div>
       </div>
 
-      {/* Contact row */}
-      <div className="flex items-center gap-4 mt-4 flex-wrap">
+      {/* Info grid — always visible */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-sm">
         {lead.email && (
-          <a href={`mailto:${lead.email}`} className="flex items-center gap-2 text-sm text-accent hover:text-accent-hover">
-            <Mail size={14} /> {lead.email}
+          <a href={`mailto:${lead.email}`} className="flex items-center gap-1.5 text-accent hover:text-accent-hover">
+            <Mail size={13} /> {lead.email}
           </a>
         )}
         {lead.phone && (
-          <a href={`tel:${lead.phone}`} className="flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary">
-            <Phone size={14} /> {lead.phone}
+          <a href={`tel:${lead.phone}`} className="flex items-center gap-1.5 text-text-secondary hover:text-text-primary">
+            <Phone size={13} /> {lead.phone}
           </a>
         )}
         {lead.linkedin_url && (
-          <a href={lead.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-text-secondary hover:text-accent">
-            <Linkedin size={14} /> LinkedIn
+          <a href={lead.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-text-secondary hover:text-accent">
+            <Linkedin size={13} /> LinkedIn
           </a>
         )}
-        <span className="text-xs text-text-tertiary ml-auto">
-          {[lead.city, lead.industry, lead.revenue_range].filter(Boolean).join(' \u00b7 ')}
-          {(lead.city || lead.industry || lead.revenue_range) && ' \u00b7 '}
-          {lead.source} \u00b7 {new Date(lead.created_at).toLocaleDateString('sv-SE')}
-          {updatedAt && ` \u00b7 Uppdaterad ${updatedAt}`}
-        </span>
+        {lead.city && (
+          <span className="flex items-center gap-1.5 text-text-secondary">
+            <MapPin size={13} /> {lead.city}
+          </span>
+        )}
+        {lead.industry && (
+          <span className="flex items-center gap-1.5 text-text-secondary">
+            <Building2 size={13} /> {lead.industry}
+          </span>
+        )}
+        {lead.revenue_range && (
+          <span className="flex items-center gap-1.5 text-text-secondary">
+            <Banknote size={13} /> {lead.revenue_range}
+          </span>
+        )}
+        {(lead.trigger_type || lead.trigger) && (
+          <span className="flex items-center gap-1.5 text-text-secondary">
+            <TrendingUp size={13} /> {lead.trigger_type || lead.trigger}
+          </span>
+        )}
       </div>
 
-      {/* Services */}
-      <div className="flex gap-2 mt-3 flex-wrap">
+      {/* Tags row: services + scoring criteria + meta */}
+      <div className="flex flex-wrap items-center gap-2 mt-3">
         {lead.services?.map((service) => (
           <span key={service} className="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-surface-card text-text-secondary">
             {service}
           </span>
         ))}
+        {criteriaMet.length > 0 && lead.services?.length > 0 && (
+          <span className="text-border">|</span>
+        )}
+        {SCORING_CRITERIA.filter((c) => criteriaMet.includes(c.id)).map((c) => (
+          <span key={c.id} className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-accent/15 text-accent">
+            {c.label}
+          </span>
+        ))}
+        <span className="text-[11px] text-text-tertiary ml-auto">
+          {lead.source} · {new Date(lead.created_at).toLocaleDateString('sv-SE')}
+          {updatedAt && ` · Uppdaterad ${updatedAt}`}
+        </span>
       </div>
+
+      {/* Notes preview */}
+      {lead.notes && (
+        <p className="mt-2 text-xs text-text-tertiary italic truncate">
+          {lead.notes}
+        </p>
+      )}
 
       {/* Expandable section */}
       <button
