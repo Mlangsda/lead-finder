@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import { SOURCES, SERVICES, INDUSTRIES, REVENUE_RANGES, TRIGGERS } from '../lib/demo-data'
-import { calculateScore } from '../lib/scoring'
+import { autoDetectCriteria, calculateScoreFromCriteria } from '../lib/scoring'
 
 const emptyLead = {
   company: '',
@@ -35,7 +35,8 @@ export function AddLeadModal({ onClose, onSave }) {
     }))
   }
 
-  const previewScore = calculateScore(form)
+  const previewCriteria = autoDetectCriteria(form)
+  const previewScore = calculateScoreFromCriteria(previewCriteria)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -44,7 +45,7 @@ export function AddLeadModal({ onClose, onSave }) {
       return
     }
     setError('')
-    onSave({ ...form, score: previewScore })
+    onSave({ ...form, score: previewScore, criteria_met: previewCriteria })
     onClose()
   }
 

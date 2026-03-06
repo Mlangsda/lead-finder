@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { X, Upload, FileText, AlertCircle } from 'lucide-react'
-import { calculateScore } from '../lib/scoring'
+import { autoDetectCriteria, calculateScoreFromCriteria } from '../lib/scoring'
 
 // Mappning fran Sales Navigator CSV-kolumner till vara falt
 const COLUMN_MAP = {
@@ -143,7 +143,8 @@ export function ImportCSVModal({ onClose, onImport }) {
           source: 'LinkedIn',
           stage: 'new',
           services: [],
-          score: calculateScore(lead),
+          criteria_met: autoDetectCriteria(lead),
+          score: calculateScoreFromCriteria(autoDetectCriteria(lead)),
         }))
         setRows(withScores)
       } catch (err) {

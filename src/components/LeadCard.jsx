@@ -2,7 +2,7 @@ import { Mail, Phone, Linkedin, ChevronDown, ChevronUp, Trash2, Pencil, X, Check
 import { useState } from 'react'
 import { ScoreBadge } from './ScoreBadge'
 import { StagePill } from './StagePill'
-import { SCORING_CRITERIA, getCriteriaMet, calculateScore } from '../lib/scoring'
+import { SCORING_CRITERIA, calculateScoreFromCriteria } from '../lib/scoring'
 import { INDUSTRIES, REVENUE_RANGES, TRIGGERS, SERVICES } from '../lib/demo-data'
 
 export function LeadCard({ lead, onUpdate, onDelete }) {
@@ -10,7 +10,7 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState({})
 
-  const criteriaMet = getCriteriaMet(lead)
+  const criteriaMet = lead.criteria_met || []
 
   const startEditing = () => {
     setForm({
@@ -31,7 +31,6 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
 
   const saveEditing = () => {
     const updates = { ...form }
-    updates.score = calculateScore({ ...lead, ...updates })
     onUpdate(lead.id, updates)
     setEditing(false)
   }
@@ -44,19 +43,11 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
 
   const toggleCriterion = (criterion) => {
     const isCurrentlyMet = criteriaMet.includes(criterion.id)
-    let updates = {}
-
-    if (criterion.id === 'marketing_title') return
-    if (criterion.id === 'new_in_role') updates.trigger_type = isCurrentlyMet ? '' : 'Ny i rollen'
-    if (criterion.id === 'new_funding') updates.trigger_type = isCurrentlyMet ? '' : 'Ny finansiering'
-    if (criterion.id === 'growth') updates.trigger_type = isCurrentlyMet ? '' : 'Tillväxt'
-    if (criterion.id === 'healthcare') updates.industry = isCurrentlyMet ? '' : 'Hälsovård'
-    if (criterion.id === 'revenue_fit') updates.revenue_range = isCurrentlyMet ? '' : '50-100 milj'
-    if (criterion.id === 'stockholm') updates.city = isCurrentlyMet ? '' : 'Stockholm'
-
-    const updatedLead = { ...lead, ...updates }
-    updates.score = calculateScore(updatedLead)
-    onUpdate(lead.id, updates)
+    const newCriteria = isCurrentlyMet
+      ? criteriaMet.filter((id) => id !== criterion.id)
+      : [...criteriaMet, criterion.id]
+    const newScore = calculateScoreFromCriteria(newCriteria)
+    onUpdate(lead.id, { criteria_met: newCriteria, score: newScore })
   }
 
   const updatedAt = lead.updated_at && lead.updated_at !== lead.created_at
@@ -229,18 +220,16 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
             <div className="grid grid-cols-2 gap-2">
               {SCORING_CRITERIA.map((criterion) => {
                 const isMet = criteriaMet.includes(criterion.id)
-                const isReadOnly = criterion.id === 'marketing_title'
                 return (
                   <button
                     key={criterion.id}
                     type="button"
-                    onClick={() => !isReadOnly && toggleCriterion(criterion)}
-                    disabled={isReadOnly}
-                    className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm transition-all border ${
+                    onClick={() => toggleCriterion(criterion)}
+                    className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm transition-all border cursor-pointer ${
                       isMet
                         ? 'bg-accent text-white border-accent font-medium'
-                        : 'bg-surface-card text-text-tertiary border-border'
-                    } ${isReadOnly ? 'opacity-50 cursor-default' : 'cursor-pointer hover:border-accent/50'}`}
+                        : 'bg-surface-card text-text-tertiary border-border hover:border-accent/50'
+                    }`}
                   >
                     <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] border ${
                       isMet ? 'bg-white/20 border-white/40 text-white' : 'border-border bg-surface'

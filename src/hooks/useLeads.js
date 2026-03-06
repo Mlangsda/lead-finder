@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { demoLeads } from '../lib/demo-data'
+import { autoDetectCriteria, calculateScoreFromCriteria } from '../lib/scoring'
 
 export function useLeads() {
   const [leads, setLeads] = useState([])
@@ -46,6 +47,7 @@ export function useLeads() {
       industry: lead.industry,
       revenue_range: lead.revenue_range,
       city: lead.city,
+      criteria_met: lead.criteria_met || autoDetectCriteria(lead),
     }
 
     if (!supabase) {
@@ -103,6 +105,7 @@ export function useLeads() {
       industry: lead.industry || '',
       revenue_range: lead.revenue_range || '',
       city: lead.city || '',
+      criteria_met: lead.criteria_met || autoDetectCriteria(lead),
     }))
 
     if (!supabase) {
