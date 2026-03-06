@@ -92,7 +92,20 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
       </button>
 
       {expanded && (
-        <div className="mt-3 pt-3 border-t border-border">
+        <div className="mt-3 pt-3 border-t border-border space-y-3">
+          <div>
+            <label className="text-xs text-text-tertiary uppercase tracking-wide">
+              Score: {lead.score}
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={lead.score}
+              onChange={(e) => onUpdate(lead.id, { score: parseInt(e.target.value) })}
+              className="w-full accent-accent mt-1"
+            />
+          </div>
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <label className="text-xs text-text-tertiary uppercase tracking-wide">Anteckningar</label>

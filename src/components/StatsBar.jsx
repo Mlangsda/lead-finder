@@ -2,9 +2,6 @@ import { STAGES } from '../lib/demo-data'
 
 export function StatsBar({ leads }) {
   const total = leads.length
-  const avgScore = total
-    ? Math.round(leads.reduce((sum, l) => sum + l.score, 0) / total)
-    : 0
 
   const stageCounts = STAGES.map((stage) => ({
     ...stage,
@@ -12,9 +9,8 @@ export function StatsBar({ leads }) {
   }))
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       <StatCard label="Totalt" value={total} />
-      <StatCard label="Snittpoang" value={avgScore} />
       {stageCounts.map((s) => (
         <StatCard key={s.id} label={s.label} value={s.count} />
       ))}
