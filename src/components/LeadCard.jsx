@@ -2,9 +2,47 @@ import { Mail, Phone, Linkedin, ChevronDown, ChevronUp, Trash2 } from 'lucide-re
 import { useState } from 'react'
 import { ScoreBadge } from './ScoreBadge'
 import { StagePill } from './StagePill'
+import { SCORING_CRITERIA, getCriteriaMet, calculateScore } from '../lib/scoring'
 
 export function LeadCard({ lead, onUpdate, onDelete }) {
   const [expanded, setExpanded] = useState(false)
+
+  const criteriaMet = getCriteriaMet(lead)
+
+  const toggleCriterion = (criterion) => {
+    const isCurrentlyMet = criteriaMet.includes(criterion.id)
+    let updates = {}
+
+    // Varje checkbox uppdaterar ratt falt i databasen
+    if (criterion.id === 'marketing_title') {
+      // Kan inte toggla titel — den ar vad den ar
+      return
+    }
+    if (criterion.id === 'new_in_role') {
+      updates.trigger_type = isCurrentlyMet ? '' : 'Ny i rollen'
+    }
+    if (criterion.id === 'new_funding') {
+      updates.trigger_type = isCurrentlyMet ? '' : 'Ny finansiering'
+    }
+    if (criterion.id === 'growth') {
+      updates.trigger_type = isCurrentlyMet ? '' : 'Tillvaxt'
+    }
+    if (criterion.id === 'healthcare') {
+      updates.industry = isCurrentlyMet ? '' : 'Halsovard'
+    }
+    if (criterion.id === 'revenue_fit') {
+      updates.revenue_range = isCurrentlyMet ? '' : '50-100 milj'
+    }
+    if (criterion.id === 'stockholm') {
+      updates.city = isCurrentlyMet ? '' : 'Stockholm'
+    }
+
+    // Berakna ny score baserat pa uppdaterade falt
+    const updatedLead = { ...lead, ...updates }
+    updates.score = calculateScore(updatedLead)
+
+    onUpdate(lead.id, updates)
+  }
 
   return (
     <div className="group bg-surface-elevated border border-border rounded-2xl p-6 hover:border-accent/40 transition-all">
@@ -36,13 +74,15 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
 
       {/* Contact row - always visible */}
       <div className="flex items-center gap-4 mt-4 flex-wrap">
-        <a
-          href={`mailto:${lead.email}`}
-          className="flex items-center gap-2 text-sm text-accent hover:text-accent-hover"
-        >
-          <Mail size={14} />
-          {lead.email}
-        </a>
+        {lead.email && (
+          <a
+            href={`mailto:${lead.email}`}
+            className="flex items-center gap-2 text-sm text-accent hover:text-accent-hover"
+          >
+            <Mail size={14} />
+            {lead.email}
+          </a>
+        )}
         {lead.phone && (
           <a
             href={`tel:${lead.phone}`}
@@ -64,9 +104,9 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
           </a>
         )}
         <span className="text-xs text-text-tertiary ml-auto">
-          {[lead.city, lead.industry, lead.revenue_range].filter(Boolean).join(' · ')}
-          {(lead.city || lead.industry || lead.revenue_range) && ' · '}
-          {lead.source} · {new Date(lead.created_at).toLocaleDateString('sv-SE')}
+          {[lead.city, lead.industry, lead.revenue_range].filter(Boolean).join(' \u00b7 ')}
+          {(lead.city || lead.industry || lead.revenue_range) && ' \u00b7 '}
+          {lead.source} \u00b7 {new Date(lead.created_at).toLocaleDateString('sv-SE')}
         </span>
       </div>
 
@@ -93,19 +133,40 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
 
       {expanded && (
         <div className="mt-3 pt-3 border-t border-border space-y-3">
+          {/* Scoring criteria */}
           <div>
             <label className="text-xs text-text-tertiary uppercase tracking-wide">
-              Score: {lead.score}
+              Score: {lead.score} / 100
             </label>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={lead.score}
-              onChange={(e) => onUpdate(lead.id, { score: parseInt(e.target.value) })}
-              className="w-full accent-accent mt-1"
-            />
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {SCORING_CRITERIA.map((criterion) => {
+                const isMet = criteriaMet.includes(criterion.id)
+                const isReadOnly = criterion.id === 'marketing_title'
+                return (
+                  <label
+                    key={criterion.id}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm cursor-pointer transition-all ${
+                      isMet
+                        ? 'bg-accent/10 text-accent'
+                        : 'bg-surface-card text-text-tertiary'
+                    } ${isReadOnly ? 'opacity-60 cursor-default' : 'hover:bg-accent/5'}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isMet}
+                      onChange={() => toggleCriterion(criterion)}
+                      disabled={isReadOnly}
+                      className="accent-accent"
+                    />
+                    <span>{criterion.label}</span>
+                    <span className="ml-auto text-xs font-medium">+{criterion.points}</span>
+                  </label>
+                )
+              })}
+            </div>
           </div>
+
+          {/* Notes + delete */}
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <label className="text-xs text-text-tertiary uppercase tracking-wide">Anteckningar</label>
