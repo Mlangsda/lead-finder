@@ -1,13 +1,12 @@
 // MLC Lead Scoring — kriterier och poäng
 
 export const SCORING_CRITERIA = [
-  { id: 'marketing_title', label: 'Marknadschef / CMO', points: 15 },
-  { id: 'new_in_role', label: 'Ny i rollen (< 1 år)', points: 15 },
-  { id: 'new_funding', label: 'Ny finansiering', points: 15 },
-  { id: 'growth', label: 'Tillväxtföretag', points: 10 },
-  { id: 'healthcare', label: 'Hälsovård', points: 10 },
-  { id: 'revenue_fit', label: 'Omsättning 50-100 milj', points: 15 },
-  { id: 'stockholm', label: 'Stockholm', points: 10 },
+  { id: 'right_decision_maker', label: 'Rätt beslutsfattare', points: 20 },
+  { id: 'need_identified', label: 'Behov identifierat', points: 20 },
+  { id: 'personal_connection', label: 'Personlig koppling', points: 15 },
+  { id: 'active_now', label: 'Aktiv just nu', points: 15 },
+  { id: 'budget_exists', label: 'Budget finns', points: 15 },
+  { id: 'good_timing', label: 'Bra timing', points: 15 },
 ]
 
 export function calculateScoreFromCriteria(criteriaMet) {
@@ -23,19 +22,7 @@ export function calculateScoreFromCriteria(criteriaMet) {
 export function autoDetectCriteria(lead) {
   const met = []
   const title = (lead.contact_title || '').toLowerCase()
-  const titleKeywords = ['marknadschef', 'cmo', 'chief marketing', 'head of marketing', 'marketing manager', 'head of brand', 'brand manager', 'marknadsdirektör', 'kommunikationschef', 'marketing director']
-  if (titleKeywords.some((k) => title.includes(k))) met.push('marketing_title')
-
-  const trigger = lead.trigger_type || lead.trigger || ''
-  if (trigger === 'Ny i rollen') met.push('new_in_role')
-  if (trigger === 'Ny finansiering') met.push('new_funding')
-  if (trigger === 'Tillväxt' || trigger === 'Tillvaxt') met.push('growth')
-
-  const industry = lead.industry || ''
-  if (industry === 'Hälsovård' || industry === 'Halsovard') met.push('healthcare')
-
-  if ((lead.revenue_range || '') === '50-100 milj') met.push('revenue_fit')
-  if ((lead.city || '').toLowerCase().includes('stockholm')) met.push('stockholm')
-
+  const titleKeywords = ['marknadschef', 'cmo', 'chief marketing', 'head of marketing', 'marketing manager', 'head of brand', 'brand manager', 'marknadsdirektör', 'kommunikationschef', 'marketing director', 'vd', 'ceo']
+  if (titleKeywords.some((k) => title.includes(k))) met.push('right_decision_maker')
   return met
 }
