@@ -218,24 +218,38 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
 
           {/* Scoring criteria */}
           <div>
-            <label className="text-xs text-text-tertiary uppercase tracking-wide">
-              Score: {lead.score} / 100
-            </label>
-            <div className="grid grid-cols-2 gap-2 mt-2">
+            <div className="flex items-center gap-3 mb-2">
+              <label className="text-xs text-text-tertiary uppercase tracking-wide">
+                Scoring-kriterier
+              </label>
+              <div className="flex items-center gap-1.5">
+                <ScoreBadge score={lead.score} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
               {SCORING_CRITERIA.map((criterion) => {
                 const isMet = criteriaMet.includes(criterion.id)
                 const isReadOnly = criterion.id === 'marketing_title'
                 return (
-                  <label
+                  <button
                     key={criterion.id}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm cursor-pointer transition-all ${
-                      isMet ? 'bg-accent/10 text-accent' : 'bg-surface-card text-text-tertiary'
-                    } ${isReadOnly ? 'opacity-60 cursor-default' : 'hover:bg-accent/5'}`}
+                    type="button"
+                    onClick={() => !isReadOnly && toggleCriterion(criterion)}
+                    disabled={isReadOnly}
+                    className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm transition-all border ${
+                      isMet
+                        ? 'bg-accent text-white border-accent font-medium'
+                        : 'bg-surface-card text-text-tertiary border-border'
+                    } ${isReadOnly ? 'opacity-50 cursor-default' : 'cursor-pointer hover:border-accent/50'}`}
                   >
-                    <input type="checkbox" checked={isMet} onChange={() => toggleCriterion(criterion)} disabled={isReadOnly} className="accent-accent" />
-                    <span>{criterion.label}</span>
-                    <span className="ml-auto text-xs font-medium">+{criterion.points}</span>
-                  </label>
+                    <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] border ${
+                      isMet ? 'bg-white/20 border-white/40 text-white' : 'border-border bg-surface'
+                    }`}>
+                      {isMet ? '✓' : ''}
+                    </span>
+                    <span className="flex-1 text-left">{criterion.label}</span>
+                    <span className={`text-xs font-semibold ${isMet ? 'text-white/80' : 'text-text-tertiary'}`}>+{criterion.points}</span>
+                  </button>
                 )
               })}
             </div>
