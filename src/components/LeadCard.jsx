@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { ScoreBadge } from './ScoreBadge'
 import { StagePill } from './StagePill'
 import { SCORING_CRITERIA, getCriteriaMet, calculateScore } from '../lib/scoring'
-import { INDUSTRIES, REVENUE_RANGES, TRIGGERS } from '../lib/demo-data'
+import { INDUSTRIES, REVENUE_RANGES, TRIGGERS, SERVICES } from '../lib/demo-data'
 
 export function LeadCard({ lead, onUpdate, onDelete }) {
   const [expanded, setExpanded] = useState(false)
@@ -24,6 +24,7 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
       industry: lead.industry || '',
       revenue_range: lead.revenue_range || '',
       trigger_type: lead.trigger_type || lead.trigger || '',
+      services: lead.services || [],
     })
     setEditing(true)
   }
@@ -178,6 +179,31 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
                     <option value="">Välj...</option>
                     {TRIGGERS.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-text-tertiary mb-1">Tjänster</label>
+                <div className="flex gap-2 flex-wrap">
+                  {SERVICES.map((service) => (
+                    <button
+                      key={service}
+                      type="button"
+                      onClick={() => {
+                        const current = form.services || []
+                        const updated = current.includes(service)
+                          ? current.filter((s) => s !== service)
+                          : [...current, service]
+                        set('services', updated)
+                      }}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border cursor-pointer transition-all ${
+                        (form.services || []).includes(service)
+                          ? 'bg-accent text-white border-accent'
+                          : 'bg-surface-card border-border text-text-secondary hover:border-text-tertiary'
+                      }`}
+                    >
+                      {service}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
