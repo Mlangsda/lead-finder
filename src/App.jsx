@@ -46,7 +46,7 @@ export default function App() {
     result.sort((a, b) => {
       if (filters.sort === 'score') return b.score - a.score
       if (filters.sort === 'date') return b.created_at.localeCompare(a.created_at)
-      return a.company.localeCompare(b.company)
+      return a.company.localeCompare(b.company, 'sv')
     })
 
     return result
