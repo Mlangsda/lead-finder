@@ -69,10 +69,10 @@ export default function App() {
     <div className="min-h-screen bg-surface">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-[900px] mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <img src="/mlc-logo.png" alt="MLC" className="w-14 h-14 object-contain" />
-            <h1 className="text-2xl font-bold tracking-tight">Lead Finder</h1>
+            <img src="/mlc-logo.png" alt="MLC" className="w-12 h-12 object-contain" />
+            <h1 className="text-[32px] font-bold tracking-tight" style={{ letterSpacing: '-0.5px' }}>Lead Finder</h1>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -94,7 +94,7 @@ export default function App() {
       </header>
 
       {/* Main */}
-      <main className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+      <main className="max-w-[900px] mx-auto px-5 pt-10 pb-20 space-y-6">
         <StatsBar leads={leads} />
         <FilterBar filters={filters} setFilters={handleFilterChange} />
 
