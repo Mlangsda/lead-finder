@@ -67,12 +67,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-surface">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-border">
-        <div className="max-w-[900px] mx-auto px-5 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <img src="/mlc-logo.png" alt="MLC" className="w-12 h-12 object-contain" />
-            <h1 className="text-[32px] font-bold tracking-tight" style={{ letterSpacing: '-0.5px' }}>Lead Finder</h1>
+      {/* Single container matching inbox report: 900px, 40px top, 20px sides, 80px bottom */}
+      <div className="max-w-[900px] mx-auto" style={{ padding: '40px 20px 80px' }}>
+        <header className="flex items-center justify-between mb-10">
+          <div className="flex items-center" style={{ gap: '14px' }}>
+            <img src="/mlc-logo.png" alt="MLC" className="object-contain" style={{ width: '48px', height: '48px' }} />
+            <h1 className="font-bold" style={{ fontSize: '32px', letterSpacing: '-0.5px', margin: 0 }}>Lead Finder</h1>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -90,11 +90,9 @@ export default function App() {
               Ny lead
             </button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main */}
-      <main className="max-w-[900px] mx-auto px-5 pt-10 pb-20 space-y-6">
+        <main className="space-y-6">
         <StatsBar leads={leads} />
         <FilterBar filters={filters} setFilters={handleFilterChange} />
 
@@ -139,7 +137,8 @@ export default function App() {
             onPageChange={setCurrentPage}
           />
         )}
-      </main>
+        </main>
+      </div>
 
       {/* Modals */}
       {showAddModal && (
