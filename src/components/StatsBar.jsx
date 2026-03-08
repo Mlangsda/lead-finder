@@ -11,7 +11,7 @@ export function StatsBar({ leads }) {
   }))
 
   return (
-    <div className="flex overflow-hidden rounded-[14px]" style={{ gap: '1px', background: 'var(--color-border)' }}>
+    <div className="flex rounded-[14px]" style={{ gap: '1px', background: 'var(--color-border)' }}>
       <StatCard label="Totalt" value={total} leads={leads} isFirst />
       {stageCounts.map((s, i) => (
         <StatCard key={s.id} label={s.label} value={s.count} leads={s.leads} isLast={i === stageCounts.length - 1} />
@@ -39,7 +39,7 @@ function StatCard({ label, value, leads, isFirst, isLast }) {
         onClick={() => value > 0 && setOpen(!open)}
         className={`w-full bg-surface-elevated px-4 py-[18px] text-center transition-all border-none ${
           value > 0 ? 'cursor-pointer hover:bg-surface-card' : 'cursor-default'
-        } ${open ? 'ring-2 ring-accent' : ''}`}
+        }`}
         style={{
           borderRadius: isFirst ? '14px 0 0 14px' : isLast ? '0 14px 14px 0' : '0',
         }}
