@@ -34,7 +34,7 @@ function StatCard({ label, value, leads, isFirst, isLast }) {
   }, [open])
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative flex-1" ref={ref}>
       <button
         onClick={() => value > 0 && setOpen(!open)}
         className={`w-full bg-surface-elevated px-4 py-[18px] text-center transition-all border-none ${
@@ -49,7 +49,7 @@ function StatCard({ label, value, leads, isFirst, isLast }) {
       </button>
 
       {open && leads.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-surface-elevated border border-border rounded-xl shadow-lg max-h-64 overflow-y-auto">
+        <div className="absolute top-full left-0 mt-2 z-50 bg-surface-elevated border border-border rounded-xl shadow-lg max-h-64 overflow-y-auto" style={{ minWidth: '240px' }}>
           <div className="p-2">
             <p className="text-[10px] text-text-tertiary uppercase tracking-wide px-2 py-1">{label} ({leads.length})</p>
             {[...leads].sort((a, b) => a.company.localeCompare(b.company, 'sv')).map((lead) => (
