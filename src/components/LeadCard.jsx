@@ -1,4 +1,4 @@
-import { Mail, Phone, Linkedin, MapPin, Building2, TrendingUp, Banknote, ChevronDown, ChevronUp, Trash2, Pencil, X, Check } from 'lucide-react'
+import { Mail, Phone, Linkedin, MapPin, Building2, TrendingUp, Banknote, ChevronDown, ChevronUp, Trash2, Pencil, X, Check, FileText } from 'lucide-react'
 import { useState } from 'react'
 import { ScoreBadge } from './ScoreBadge'
 import { StagePill } from './StagePill'
@@ -8,6 +8,9 @@ import { INDUSTRIES, REVENUE_RANGES, TRIGGERS, SERVICES } from '../lib/demo-data
 export function LeadCard({ lead, onUpdate, onDelete }) {
   const [expanded, setExpanded] = useState(false)
   const [editing, setEditing] = useState(false)
+  const [editingResearch, setEditingResearch] = useState(false)
+  const [researchDraft, setResearchDraft] = useState('')
+  const [researchExpanded, setResearchExpanded] = useState(false)
   const [form, setForm] = useState({})
 
   const criteriaMet = lead.criteria_met || []
@@ -276,6 +279,66 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
               })}
             </div>
           </div>
+
+          {/* Research section */}
+          {(lead.research || editingResearch) && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <button
+                  onClick={() => setResearchExpanded(!researchExpanded)}
+                  className="flex items-center gap-2 text-xs text-text-tertiary uppercase tracking-wide cursor-pointer bg-transparent border-none p-0 hover:text-text-secondary"
+                >
+                  <FileText size={13} />
+                  Research
+                  {researchExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                </button>
+                <button
+                  onClick={() => {
+                    if (editingResearch) {
+                      onUpdate(lead.id, { research: researchDraft })
+                      setEditingResearch(false)
+                    } else {
+                      setResearchDraft(lead.research || '')
+                      setEditingResearch(true)
+                      setResearchExpanded(true)
+                    }
+                  }}
+                  className="flex items-center gap-1 px-2 py-1 text-[11px] text-text-tertiary bg-surface-card border border-border rounded-md cursor-pointer hover:text-accent hover:border-accent transition-all"
+                >
+                  {editingResearch ? <><Check size={10} /> Spara</> : <><Pencil size={10} /> Redigera</>}
+                </button>
+              </div>
+              {researchExpanded && (
+                editingResearch ? (
+                  <textarea
+                    value={researchDraft}
+                    onChange={(e) => setResearchDraft(e.target.value)}
+                    rows={12}
+                    className="w-full bg-surface-card border border-accent/40 rounded-lg px-3 py-2 text-sm text-text-primary resize-y focus:outline-none focus:border-accent font-mono"
+                    placeholder="Lägg till research..."
+                  />
+                ) : (
+                  <div className="bg-surface-card border border-border rounded-lg px-4 py-3 text-sm text-text-primary max-h-80 overflow-y-auto leading-relaxed whitespace-pre-wrap">
+                    {lead.research}
+                  </div>
+                )
+              )}
+            </div>
+          )}
+
+          {/* Add research button (when no research exists) */}
+          {!lead.research && !editingResearch && (
+            <button
+              onClick={() => {
+                setResearchDraft('')
+                setEditingResearch(true)
+                setResearchExpanded(true)
+              }}
+              className="flex items-center gap-2 px-3 py-2 text-xs text-text-tertiary bg-surface-card border border-dashed border-border rounded-lg cursor-pointer hover:border-accent hover:text-accent transition-all"
+            >
+              <FileText size={12} /> Lägg till research
+            </button>
+          )}
 
           {/* Notes + delete */}
           <div className="flex items-start justify-between">
