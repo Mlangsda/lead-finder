@@ -147,10 +147,36 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
 
       {/* Notes preview */}
       {lead.notes && (
-        <p className="mt-2 text-xs text-text-tertiary italic truncate">
+        <p className="mt-2 text-xs text-text-tertiary italic whitespace-pre-line line-clamp-4">
           {lead.notes}
         </p>
       )}
+
+      {/* Research summary — visible on collapsed card */}
+      {lead.research && !expanded && (() => {
+        const lines = lead.research.split('\n')
+          .map(l => l.trim())
+          .filter(l => l && !l.startsWith('═') && !l.startsWith('---') && !l.startsWith('***') && l !== '|')
+        const meaningful = lines.filter(l =>
+          !l.match(/^[\s═─\-\*\|]+$/) &&
+          l.length > 10
+        ).slice(0, 6)
+        return (
+          <div className="mt-3 bg-accent/5 border border-accent/15 rounded-lg px-4 py-3">
+            <button
+              onClick={() => { setExpanded(true); setResearchExpanded(true) }}
+              className="flex items-center gap-2 mb-1.5 cursor-pointer bg-transparent border-none p-0 hover:opacity-80"
+            >
+              <FileText size={13} className="text-accent" />
+              <span className="text-xs font-semibold text-accent uppercase tracking-wide">Research</span>
+              <ChevronDown size={12} className="text-accent" />
+            </button>
+            <p className="text-xs text-text-secondary leading-relaxed line-clamp-5 whitespace-pre-line">
+              {meaningful.join('\n')}
+            </p>
+          </div>
+        )
+      })()}
 
       {/* Expandable section */}
       <button
