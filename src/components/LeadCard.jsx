@@ -10,7 +10,7 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false)
   const [editingResearch, setEditingResearch] = useState(false)
   const [researchDraft, setResearchDraft] = useState('')
-  const [researchExpanded, setResearchExpanded] = useState(false)
+  const [researchExpanded, setResearchExpanded] = useState(!!lead.research)
   const [form, setForm] = useState({})
 
   const criteriaMet = lead.criteria_met || []
