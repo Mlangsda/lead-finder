@@ -145,38 +145,27 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
         </span>
       </div>
 
-      {/* Notes preview */}
-      {lead.notes && (
-        <p className="mt-2 text-xs text-text-tertiary italic whitespace-pre-line line-clamp-4">
-          {lead.notes}
-        </p>
-      )}
-
-      {/* Research summary — visible on collapsed card */}
-      {lead.research && !expanded && (() => {
-        const lines = lead.research.split('\n')
-          .map(l => l.trim())
-          .filter(l => l && !l.startsWith('═') && !l.startsWith('---') && !l.startsWith('***') && l !== '|')
-        const meaningful = lines.filter(l =>
-          !l.match(/^[\s═─\-\*\|]+$/) &&
-          l.length > 10
-        ).slice(0, 6)
-        return (
-          <div className="mt-3 bg-accent/5 border border-accent/15 rounded-lg px-4 py-3">
-            <button
-              onClick={() => { setExpanded(true); setResearchExpanded(true) }}
-              className="flex items-center gap-2 mb-1.5 cursor-pointer bg-transparent border-none p-0 hover:opacity-80"
-            >
-              <FileText size={13} className="text-accent" />
-              <span className="text-xs font-semibold text-accent uppercase tracking-wide">Research</span>
-              <ChevronDown size={12} className="text-accent" />
-            </button>
-            <p className="text-xs text-text-secondary leading-relaxed line-clamp-5 whitespace-pre-line">
-              {meaningful.join('\n')}
-            </p>
-          </div>
-        )
+      {/* Notes preview — first paragraph only, no truncation */}
+      {lead.notes && (() => {
+        const firstParagraph = lead.notes.split('\n\n')[0].trim()
+        return firstParagraph ? (
+          <p className="mt-2 text-xs text-text-tertiary italic">
+            {firstParagraph}
+          </p>
+        ) : null
       })()}
+
+      {/* Research badge — clean clickable indicator on collapsed card */}
+      {lead.research && !expanded && (
+        <button
+          onClick={() => { setExpanded(true); setResearchExpanded(true) }}
+          className="mt-3 flex items-center gap-2 px-3 py-2 bg-accent/8 border border-accent/20 rounded-lg cursor-pointer hover:bg-accent/15 hover:border-accent/30 transition-all"
+        >
+          <FileText size={14} className="text-accent" />
+          <span className="text-xs font-semibold text-accent">Research finns</span>
+          <span className="text-[11px] text-text-tertiary">— klicka för att visa</span>
+        </button>
+      )}
 
       {/* Expandable section */}
       <button
