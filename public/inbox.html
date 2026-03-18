@@ -1321,6 +1321,10 @@
 <script>
 (function() {
   const STORAGE_KEY = 'inbox-report-checked';
+  const SB_URL = 'https://dxixbtxywsvshthtiwgo.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4aXhidHh5d3N2c2h0aHRpd2dvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NjE1MzgsImV4cCI6MjA4ODIzNzUzOH0.87q-gad0BtcRcYHKpsKNqoJ8wTo-8jLPUizGomLboB4';
+  const APP_NAME = 'lead-finder';
+  let checkedCache = {};
 
   // MS Graph message IDs for each card
   const EMAIL_IDS = {
@@ -1379,16 +1383,57 @@
     "m5-kokscenter-oscar-properties": "AAMkAGM2M2YyM2M1LWY3ZDItNDg3My1iZTYzLWM4ZmZhY2Y1MDVkNABGAAAAAACrLlH_ZpNjQLTmH6xMw-RABwDKcBpiwgLVS4zTwdnFAhlvAAAAAAEMAADKcBpiwgLVS4zTwdnFAhlvAABlkRGFAAA="
   };
 
-  function getChecked() {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    } catch(e) {
-      return {};
-    }
+  // --- Supabase REST helper ---
+  async function sbFetch(path, opts = {}) {
+    const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
+      ...opts,
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', Prefer: opts.prefer || 'return=representation', ...opts.headers }
+    });
+    if (!res.ok) { console.error('Supabase error', res.status); return null; }
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
   }
 
-  function saveChecked(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  async function loadCheckedFromSupabase() {
+    const rows = await sbFetch(`inbox_checked?app=eq.${APP_NAME}&select=email_id,checked_at`);
+    const result = {};
+    if (rows) rows.forEach(r => { result[r.email_id] = new Date(r.checked_at).getTime(); });
+    return result;
+  }
+
+  async function saveCheckToSupabase(emailId, timestamp) {
+    await sbFetch('inbox_checked', {
+      method: 'POST',
+      body: JSON.stringify({ app: APP_NAME, email_id: emailId, checked_at: new Date(timestamp).toISOString() }),
+      prefer: 'return=minimal',
+      headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }
+    });
+  }
+
+  async function removeCheckFromSupabase(emailId) {
+    await sbFetch(`inbox_checked?app=eq.${APP_NAME}&email_id=eq.${encodeURIComponent(emailId)}`, { method: 'DELETE', prefer: 'return=minimal' });
+  }
+
+  async function migrateLocalStorage() {
+    const MIGRATED_KEY = 'inbox-checked-migrated-' + APP_NAME;
+    if (localStorage.getItem(MIGRATED_KEY)) return;
+    let local = {};
+    try { local = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch {}
+    const keys = Object.keys(local);
+    if (keys.length > 0) {
+      for (const emailId of keys) {
+        await saveCheckToSupabase(emailId, local[emailId]);
+      }
+    }
+    localStorage.setItem(MIGRATED_KEY, new Date().toISOString());
+  }
+
+  function getChecked() {
+    return checkedCache;
+  }
+
+  async function saveChecked(data) {
+    checkedCache = data;
   }
 
   // Kolla om avbockad för mer än 7 dagar sedan
@@ -1465,12 +1510,13 @@
       el.classList.remove('checked');
       card.classList.remove('checked');
       delete checked[id];
+      removeCheckFromSupabase(id);
     } else {
       el.classList.add('checked');
       card.classList.add('checked');
       checked[id] = Date.now();
-      // Mark as read in Exchange
       markAsReadInExchange(id, card);
+      saveCheckToSupabase(id, checked[id]);
     }
 
     saveChecked(checked);
@@ -1558,7 +1604,24 @@
     }
   };
 
-  updateStats();
+  // --- Init: migrate localStorage → Supabase, then load state ---
+  (async function() {
+    await migrateLocalStorage();
+    checkedCache = await loadCheckedFromSupabase();
+    // Re-apply checked state to rendered cards
+    const checked = getChecked();
+    document.querySelectorAll('.card[data-id]').forEach(card => {
+      const id = card.dataset.id;
+      if (checked[id] && !isExpired(checked[id])) {
+        card.classList.add('checked');
+        const cb = card.querySelector('.checkbox');
+        if (cb) cb.classList.add('checked');
+      } else if (checked[id] && isExpired(checked[id])) {
+        card.style.display = 'none';
+      }
+    });
+    updateStats();
+  })();
 })();
 </script>
 </body>
