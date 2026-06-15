@@ -1,4 +1,4 @@
-import { Mail, Phone, Linkedin, MapPin, Building2, TrendingUp, Banknote, ChevronDown, ChevronUp, Trash2, Pencil, X, Check, FileText } from 'lucide-react'
+import { Mail, Phone, Linkedin, MapPin, Building2, TrendingUp, Banknote, ChevronDown, ChevronUp, Trash2, Pencil, X, Check, FileText, Target } from 'lucide-react'
 import { useState } from 'react'
 import { ScoreBadge } from './ScoreBadge'
 import { StagePill } from './StagePill'
@@ -11,6 +11,9 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
   const [editingResearch, setEditingResearch] = useState(false)
   const [researchDraft, setResearchDraft] = useState('')
   const [researchExpanded, setResearchExpanded] = useState(!!lead.research)
+  const [editingActions, setEditingActions] = useState(false)
+  const [actionsDraft, setActionsDraft] = useState('')
+  const [actionsExpanded, setActionsExpanded] = useState(!!lead.possible_actions)
   const [form, setForm] = useState({})
 
   const criteriaMet = lead.criteria_met || []
@@ -352,6 +355,66 @@ export function LeadCard({ lead, onUpdate, onDelete }) {
               className="flex items-center gap-2 px-3 py-2 text-xs text-text-tertiary bg-surface-card border border-dashed border-border rounded-lg cursor-pointer hover:border-accent hover:text-accent transition-all"
             >
               <FileText size={12} /> Lägg till research
+            </button>
+          )}
+
+          {/* Möjliga actions section */}
+          {(lead.possible_actions || editingActions) && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <button
+                  onClick={() => setActionsExpanded(!actionsExpanded)}
+                  className="flex items-center gap-2 text-xs text-text-tertiary uppercase tracking-wide cursor-pointer bg-transparent border-none p-0 hover:text-text-secondary"
+                >
+                  <Target size={13} />
+                  Möjliga actions
+                  {actionsExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                </button>
+                <button
+                  onClick={() => {
+                    if (editingActions) {
+                      onUpdate(lead.id, { possible_actions: actionsDraft })
+                      setEditingActions(false)
+                    } else {
+                      setActionsDraft(lead.possible_actions || '')
+                      setEditingActions(true)
+                      setActionsExpanded(true)
+                    }
+                  }}
+                  className="flex items-center gap-1 px-2 py-1 text-[11px] text-text-tertiary bg-surface-card border border-border rounded-md cursor-pointer hover:text-accent hover:border-accent transition-all"
+                >
+                  {editingActions ? <><Check size={10} /> Spara</> : <><Pencil size={10} /> Redigera</>}
+                </button>
+              </div>
+              {actionsExpanded && (
+                editingActions ? (
+                  <textarea
+                    value={actionsDraft}
+                    onChange={(e) => setActionsDraft(e.target.value)}
+                    rows={10}
+                    className="w-full bg-surface-card border border-accent/40 rounded-lg px-3 py-2 text-sm text-text-primary resize-y focus:outline-none focus:border-accent font-mono"
+                    placeholder="Lägg till möjliga actions..."
+                  />
+                ) : (
+                  <div className="bg-surface-card border border-border rounded-lg px-4 py-3 text-sm text-text-primary max-h-80 overflow-y-auto leading-relaxed whitespace-pre-wrap">
+                    {lead.possible_actions}
+                  </div>
+                )
+              )}
+            </div>
+          )}
+
+          {/* Add möjliga actions button (when none exists) */}
+          {!lead.possible_actions && !editingActions && (
+            <button
+              onClick={() => {
+                setActionsDraft('')
+                setEditingActions(true)
+                setActionsExpanded(true)
+              }}
+              className="flex items-center gap-2 px-3 py-2 text-xs text-text-tertiary bg-surface-card border border-dashed border-border rounded-lg cursor-pointer hover:border-accent hover:text-accent transition-all"
+            >
+              <Target size={12} /> Lägg till möjliga actions
             </button>
           )}
 
