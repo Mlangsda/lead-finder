@@ -14,7 +14,7 @@ const defaultFilters = {
   stage: '',
   source: '',
   service: '',
-  sort: 'company',
+  sort: 'score',
 }
 
 export default function App() {
@@ -47,7 +47,12 @@ export default function App() {
     }
 
     result.sort((a, b) => {
-      if (filters.sort === 'score') return b.score - a.score
+      if (filters.sort === 'score') {
+        const diff = (b.score || 0) - (a.score || 0)
+        if (diff !== 0) return diff
+        // Lika score (t.ex. alla 20:or, rätt beslutsfattare) → bokstavsordning
+        return (a.company || '').localeCompare(b.company || '', 'sv')
+      }
       if (filters.sort === 'date') return b.created_at.localeCompare(a.created_at)
       return a.company.localeCompare(b.company, 'sv')
     })

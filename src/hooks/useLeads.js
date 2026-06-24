@@ -3,6 +3,15 @@ import { supabase } from '../lib/supabase'
 import { demoLeads } from '../lib/demo-data'
 import { autoDetectCriteria, calculateScoreFromCriteria } from '../lib/scoring'
 
+// Högst score överst, därefter företag i bokstavsordning
+function sortLeads(list) {
+  return [...list].sort((a, b) => {
+    const diff = (b.score || 0) - (a.score || 0)
+    if (diff !== 0) return diff
+    return (a.company || '').localeCompare(b.company || '', 'sv')
+  })
+}
+
 export function useLeads() {
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
@@ -10,7 +19,7 @@ export function useLeads() {
   // Fetch leads on mount
   useEffect(() => {
     if (!supabase) {
-      setLeads(demoLeads)
+      setLeads(sortLeads(demoLeads))
       setLoading(false)
       return
     }
@@ -18,13 +27,14 @@ export function useLeads() {
     supabase
       .from('leads')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('score', { ascending: false, nullsFirst: false })
+      .order('company', { ascending: true })
       .then(({ data, error }) => {
         if (error) {
           console.error('Error fetching leads:', error)
-          setLeads(demoLeads)
+          setLeads(sortLeads(demoLeads))
         } else {
-          setLeads(data || [])
+          setLeads(sortLeads(data || []))
         }
         setLoading(false)
       })
@@ -52,7 +62,7 @@ export function useLeads() {
 
     if (!supabase) {
       const local = { ...row, id: crypto.randomUUID(), created_at: new Date().toISOString() }
-      setLeads((prev) => [local, ...prev])
+      setLeads((prev) => sortLeads([local, ...prev]))
       return local
     }
 
@@ -61,13 +71,13 @@ export function useLeads() {
       console.error('Error adding lead:', error)
       return null
     }
-    setLeads((prev) => [data, ...prev])
+    setLeads((prev) => sortLeads([data, ...prev]))
     return data
   }, [])
 
   const updateLead = useCallback(async (id, updates) => {
     setLeads((prev) =>
-      prev.map((lead) => (lead.id === id ? { ...lead, ...updates } : lead))
+      sortLeads(prev.map((lead) => (lead.id === id ? { ...lead, ...updates } : lead)))
     )
 
     if (!supabase) return
@@ -110,7 +120,7 @@ export function useLeads() {
 
     if (!supabase) {
       const local = rows.map((r) => ({ ...r, id: crypto.randomUUID(), created_at: new Date().toISOString() }))
-      setLeads((prev) => [...local, ...prev])
+      setLeads((prev) => sortLeads([...local, ...prev]))
       return local
     }
 
@@ -119,7 +129,7 @@ export function useLeads() {
       console.error('Error importing leads:', error)
       return []
     }
-    setLeads((prev) => [...(data || []), ...prev])
+    setLeads((prev) => sortLeads([...(data || []), ...prev]))
     return data
   }, [])
 
