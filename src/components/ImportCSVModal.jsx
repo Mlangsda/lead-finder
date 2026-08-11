@@ -147,7 +147,7 @@ export function ImportCSVModal({ onClose, onImport }) {
           score: calculateScoreFromCriteria(autoDetectCriteria(lead)),
         }))
         setRows(withScores)
-      } catch (err) {
+      } catch {
         setError('Kunde inte lasa filen. Kontrollera att det ar en CSV-fil.')
       }
     }

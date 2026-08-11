@@ -1,8 +1,6 @@
 import { STAGES } from '../lib/demo-data'
 
 export function StagePill({ stage, onChange }) {
-  const stageData = STAGES.find((s) => s.id === stage) || STAGES[0]
-
   return (
     <select
       value={stage}

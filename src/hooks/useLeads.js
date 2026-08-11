@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { demoLeads } from '../lib/demo-data'
-import { autoDetectCriteria, calculateScoreFromCriteria } from '../lib/scoring'
+import { autoDetectCriteria } from '../lib/scoring'
 
 // Högst score överst, därefter företag i bokstavsordning
 function sortLeads(list) {
@@ -13,16 +13,13 @@ function sortLeads(list) {
 }
 
 export function useLeads() {
-  const [leads, setLeads] = useState([])
-  const [loading, setLoading] = useState(true)
+  // Utan Supabase-konfiguration visas demodata direkt vid första renderingen
+  const [leads, setLeads] = useState(() => (supabase ? [] : sortLeads(demoLeads)))
+  const [loading, setLoading] = useState(() => Boolean(supabase))
 
   // Fetch leads on mount
   useEffect(() => {
-    if (!supabase) {
-      setLeads(sortLeads(demoLeads))
-      setLoading(false)
-      return
-    }
+    if (!supabase) return
 
     supabase
       .from('leads')
