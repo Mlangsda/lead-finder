@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { X, Upload, FileText, AlertCircle } from 'lucide-react'
 import { autoDetectCriteria, calculateScoreFromCriteria } from '../lib/scoring'
 
-// Mappning fran Sales Navigator CSV-kolumner till vara falt
+// Mappning från Sales Navigator CSV-kolumner till våra fält
 const COLUMN_MAP = {
   'first name': 'first_name',
   'last name': 'last_name',
@@ -29,7 +29,7 @@ function parseCSV(text) {
   const lines = text.trim().split('\n')
   if (lines.length < 2) return []
 
-  // Hantera bade komma och semikolon som separator
+  // Hantera både komma och semikolon som separator
   const separator = lines[0].includes(';') ? ';' : ','
 
   const headers = parseLine(lines[0], separator).map((h) => h.trim().toLowerCase())
@@ -80,18 +80,18 @@ function mapRow(row) {
   delete mapped.first_name
   delete mapped.last_name
 
-  // Gissa omsattning fran headcount
+  // Gissa omsättning från headcount
   if (mapped.headcount) {
     const count = parseInt(mapped.headcount)
     if (count < 20) mapped.revenue_range = 'Under 10 milj'
     else if (count < 100) mapped.revenue_range = '10-50 milj'
     else if (count < 300) mapped.revenue_range = '50-100 milj'
     else if (count < 1000) mapped.revenue_range = '100-500 milj'
-    else mapped.revenue_range = 'Over 500 milj'
+    else mapped.revenue_range = 'Över 500 milj'
     delete mapped.headcount
   }
 
-  // Mappa bransch till vara varden
+  // Mappa bransch till våra värden
   if (mapped.industry) {
     mapped.industry = mapIndustry(mapped.industry)
   }
@@ -101,7 +101,7 @@ function mapRow(row) {
 
 function mapIndustry(raw) {
   const lower = raw.toLowerCase()
-  if (lower.includes('health') || lower.includes('pharma') || lower.includes('medical') || lower.includes('halso')) return 'Halsovard'
+  if (lower.includes('health') || lower.includes('pharma') || lower.includes('medical') || lower.includes('hälso')) return 'Hälsovård'
   if (lower.includes('tech') || lower.includes('software') || lower.includes('it ') || lower.includes('saas')) return 'Tech'
   if (lower.includes('real estate') || lower.includes('fastighet') || lower.includes('property')) return 'Fastigheter'
   if (lower.includes('financ') || lower.includes('bank') || lower.includes('finans') || lower.includes('insurance')) return 'Finans'
@@ -134,10 +134,10 @@ export function ImportCSVModal({ onClose, onImport }) {
         }
         const mapped = parsed.map(mapRow).filter((r) => r.company)
         if (mapped.length === 0) {
-          setError('Hittade inga rader med foretagsnamn. Kolla att CSV-filen har en "Company"-kolumn.')
+          setError('Hittade inga rader med företagsnamn. Kolla att CSV-filen har en "Company"-kolumn.')
           return
         }
-        // Berakna score for varje lead
+        // Beräkna score för varje lead
         const withScores = mapped.map((lead) => ({
           ...lead,
           source: 'LinkedIn',
@@ -148,7 +148,7 @@ export function ImportCSVModal({ onClose, onImport }) {
         }))
         setRows(withScores)
       } catch {
-        setError('Kunde inte lasa filen. Kontrollera att det ar en CSV-fil.')
+        setError('Kunde inte läsa filen. Kontrollera att det är en CSV-fil.')
       }
     }
     reader.readAsText(file)
@@ -164,7 +164,7 @@ export function ImportCSVModal({ onClose, onImport }) {
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div className="relative bg-surface-elevated border border-border rounded-3xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold">Importera leads fran CSV</h2>
+          <h2 className="text-xl font-semibold">Importera leads från CSV</h2>
           <button
             onClick={onClose}
             className="p-2 text-text-tertiary hover:text-text-primary cursor-pointer bg-transparent border-none"
@@ -176,13 +176,13 @@ export function ImportCSVModal({ onClose, onImport }) {
         {rows.length === 0 ? (
           <div className="space-y-4">
             <p className="text-sm text-text-secondary">
-              Exportera leads fran LinkedIn Sales Navigator som CSV och ladda upp filen har.
+              Exportera leads från LinkedIn Sales Navigator som CSV och ladda upp filen här.
             </p>
 
             <label className="flex flex-col items-center justify-center gap-3 p-10 border-2 border-dashed border-border rounded-2xl cursor-pointer hover:border-accent transition-colors">
               <Upload size={32} className="text-text-tertiary" />
               <span className="text-sm text-text-secondary">
-                {fileName || 'Klicka for att valja CSV-fil'}
+                {fileName || 'Klicka för att välja CSV-fil'}
               </span>
               <input
                 type="file"
@@ -211,7 +211,7 @@ export function ImportCSVModal({ onClose, onImport }) {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-surface-card text-text-tertiary text-xs uppercase tracking-wide">
-                      <th className="px-3 py-2 text-left">Foretag</th>
+                      <th className="px-3 py-2 text-left">Företag</th>
                       <th className="px-3 py-2 text-left">Kontakt</th>
                       <th className="px-3 py-2 text-left">Titel</th>
                       <th className="px-3 py-2 text-left">Ort</th>
@@ -242,7 +242,7 @@ export function ImportCSVModal({ onClose, onImport }) {
                 onClick={() => { setRows([]); setFileName(''); setError('') }}
                 className="flex-1 py-3 bg-surface-card border border-border text-text-primary rounded-2xl text-sm font-medium cursor-pointer hover:bg-surface-card/80"
               >
-                Valj annan fil
+                Välj annan fil
               </button>
               <button
                 onClick={handleImport}
